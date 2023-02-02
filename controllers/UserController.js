@@ -53,8 +53,7 @@ const logout = async (req, res) => {
 
 
 const index = async (req, res) => {
-    const userDoc = await User.find();
-    res.json(userDoc);
+   res.json("test ok");
 }
 
 const profile = async (req, res) => {
