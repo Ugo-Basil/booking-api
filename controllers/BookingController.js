@@ -3,7 +3,7 @@ const Booking = require("../models/Booking");
 
 const jwt = require("jsonwebtoken");
 
-const jwtSecret = process.env.JWT_SECRET;
+const jwtSecret = `${process.env.JWT_SECRET}`;
 
 function getUserDataFromReq(req) {
   return new Promise((resolve, reject) => {

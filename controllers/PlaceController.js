@@ -1,7 +1,7 @@
 const Place = require("../models/Place");
 const jwt = require("jsonwebtoken");
 
-const jwtSecret = process.env.JWT_SECRET;
+const jwtSecret = `${process.env.JWT_SECRET}`;
 
 const createPlace = async (req, res) => {
     const { token } = req.cookies;

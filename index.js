@@ -22,7 +22,7 @@ app.use(cookieParser());
 app.use(
   cors({
     credentials: true,
-    origin: "http://127.0.0.1:5173",
+    origin: "http://localhost:5173",
   })
 );
 
@@ -69,9 +69,12 @@ app.use('/user', UserRoutes);
 app.use('/place', PlaceRoutes);
 app.use('/booking', BookingRoutes);
 
+app.get("/", (req, res) => {
+  res.json("test ok");
+});
 
 app.listen(4000, () => {
-    console.log('server app listening on port 3000!');
+    console.log("server app listening on port 4000!");
 }
 );
 

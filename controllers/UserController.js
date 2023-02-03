@@ -3,47 +3,53 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 
 const jwt = require("jsonwebtoken");
-
-
-const jwtSecret = process.env.JWT_SECRET;
-
+const jwtSecret =`${process.env.JWT_SECRET}`;
 
 const register = async (req, res) => {
-    const { email, password, name } = req.body;
+  const { email, password, name } = req.body;
 
-    try {
-        const userDoc = await User.create({
-            name,
-            email,
-            password: await bcrypt.hash(password, 10),
-    
-        });
-        res.json(userDoc);
-    } catch (err) {
-        res.status(500).json(err);
-
-    }
+  try {
+    const userDoc = await User.create({
+      name,
+      email,
+      password: await bcrypt.hash(password, 10),
+    });
+    res.json({ userDoc });
+  } catch (err) {
+    res.status(500).json(err);
+  }
 };
 
 const login = async (req, res) => {
+  try {
     const { email, password } = req.body;
     const userDoc = await User.findOne({ email });
-   if (userDoc) {
-    const passOk = bcrypt.compareSync(password, userDoc.password);
-    if (passOk) {
-      jwt.sign({
-        email:userDoc.email,
-        id:userDoc._id
-      }, jwtSecret, {}, (err,token) => {
-        if (err) throw err;
-        res.cookie('token', token).json(userDoc);
-      });
-    } else {
-      res.status(422).json('pass not ok');
+
+    if (!userDoc) {
+      res.status(400).json("User not found");
     }
-  } else {
-    res.json('not found');
-   }
+
+    if (userDoc) {
+      const isMatch = await bcrypt.compare(password, userDoc.password);
+      if (!isMatch) {
+        res.status(400).json("Password is incorrect");
+      } else {
+        const token = jwt.sign({ id: userDoc._id },jwtSecret, {
+          expiresIn: "1d",
+        });
+        res.cookie("token", token, { httpOnly: true }).json({
+          token,
+          user: {
+            name: userDoc.name,
+            email: userDoc.email,
+            _id: userDoc._id,
+          },
+        });
+      }
+    }
+  } catch (error) {
+    res.status(500).json("Failed to login");
+  }
 };
 
 
